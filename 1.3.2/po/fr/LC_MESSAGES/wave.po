@@ -1,0 +1,340 @@
+# French translations for WAVE package.
+# Copyright (C) 2007 THE WAVE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the WAVE package.
+# Automatically generated, 2007.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: wave 1.3.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-09-29 19:14+0200\n"
+"PO-Revision-Date: 2007-10-25 16:52+0200\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: french\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: scheme.c:66
+msgid "No enough memory to start the variables"
+msgstr "Mémoire insuffisante pour commencer les variables"
+
+#: dialog_wave.c:27
+msgid "Linear"
+msgstr "Linéaire"
+
+#: dialog_wave.c:28
+msgid "Square"
+msgstr "Carrée"
+
+#: dialog_wave.c:29
+msgid "Triangular"
+msgstr "Triangulaire"
+
+#: dialog_wave.c:29
+msgid "Sinusoidal"
+msgstr ""
+
+#: dialog_wave.c:29
+msgid "Gaussian"
+msgstr "Gaussiane"
+
+#: dialog_wave.c:30
+msgid "Steady"
+msgstr "Stationère"
+
+#: dialog_wave.c:45
+msgid "Equation type"
+msgstr ""
+
+#: dialog_wave.c:61
+msgid "Initial shape"
+msgstr "Onde initial"
+
+#: dialog_wave.c:68
+msgid "Shape position"
+msgstr "Position de l'onde"
+
+#: dialog_wave.c:74
+msgid "Shape width"
+msgstr "Largeur de l'onde"
+
+#: dialog_wave.c:81
+msgid "Shape amplitude"
+msgstr "Amplitude de l'onde"
+
+#: dialog_wave.c:87
+msgid "Base height"
+msgstr "Hauteur base"
+
+#: dialog_wave.c:93
+msgid "Domain width"
+msgstr ""
+
+#: dialog_wave.c:100
+msgid "Wave velocity"
+msgstr "Vitesse d'onde"
+
+#: dialog_wave.c:118 simulator.c:99
+msgid "Wave type"
+msgstr "Type d'onde"
+
+#: dialog_scheme.c:44
+msgid "Lax-Friedrichs optimized"
+msgstr "Lax-Friedrichs optimizé"
+
+#: dialog_scheme.c:44
+msgid "1st order upwind"
+msgstr "Upwind d'ordre 1"
+
+#: dialog_scheme.c:45
+msgid "2nd order upwind"
+msgstr "Upwind d'ordre 2"
+
+#: dialog_scheme.c:46
+msgid "Classical spatial 2nd order TVD"
+msgstr "Classique TVD d'ordre 2 spatial"
+
+#: dialog_scheme.c:47
+msgid "Spatial 2nd order TVD"
+msgstr "TVD d'ordre 2 spatial"
+
+#: dialog_scheme.c:48
+msgid "2nd order TVD"
+msgstr "TVD d'ordre 2"
+
+#: dialog_scheme.c:48
+msgid "Tridiagonal upwind implicit"
+msgstr "Tridiagonale upwind implicite"
+
+#: dialog_scheme.c:49
+msgid "Optimized tridiagonal implicit"
+msgstr "Tridiagonale upwind optimizé"
+
+#: dialog_scheme.c:50
+msgid "Bidiagonal upwind implicit"
+msgstr "Bidiagonale upwind implicite"
+
+#: dialog_scheme.c:51
+msgid "Optimized bidiagonal implicit"
+msgstr "Bidiagonale upwind optimizé"
+
+#: dialog_scheme.c:52
+msgid "Tridiagonal upwind semi-explicit"
+msgstr "Tridiagonale upwind semi-explicite"
+
+#: dialog_scheme.c:53
+msgid "Bidiagonal upwind semi-explicit"
+msgstr "Bidiagonale upwind semi-explicite"
+
+#: dialog_scheme.c:55 dialog_scheme.c:57
+msgid "None"
+msgstr "Nulle"
+
+#: dialog_scheme.c:55
+msgid "Centered"
+msgstr "Centré"
+
+#: dialog_scheme.c:56
+msgid "Total"
+msgstr ""
+
+#: dialog_scheme.c:56 dialog_scheme.c:58
+msgid "Mean"
+msgstr "Moyenne"
+
+#: dialog_scheme.c:58
+msgid "Double mean"
+msgstr "Moyenne moyenne"
+
+#: dialog_scheme.c:58
+msgid "Interpolated"
+msgstr "Interpolée"
+
+#: dialog_scheme.c:59
+msgid "Interpolated mean"
+msgstr "Interpolée moyenne"
+
+#: dialog_scheme.c:61
+msgid "Regular"
+msgstr "Régulière"
+
+#: dialog_scheme.c:61
+msgid "Progressive"
+msgstr "Progressive"
+
+#: dialog_scheme.c:61
+msgid "Aleatory"
+msgstr "Aléatoire"
+
+#: dialog_scheme.c:63
+msgid "Finite differences"
+msgstr "Differences finites"
+
+#: dialog_scheme.c:63
+msgid "Finite volumes"
+msgstr "Volumes finites"
+
+#: dialog_scheme.c:67
+msgid "Mesh cells"
+msgstr "Numéro de cellules"
+
+#: dialog_scheme.c:71 simulator.c:150
+msgid "Simulation time"
+msgstr "Temps de simulation"
+
+#: dialog_scheme.c:85 dialog_scheme.c:221 simulator.c:99
+msgid "Numerical scheme"
+msgstr "Schéma numerique"
+
+#: dialog_scheme.c:99
+msgid "Flux limiter"
+msgstr "Limiteur de flux"
+
+#: dialog_scheme.c:113
+msgid "Entropy correction"
+msgstr "Correction d'entropie"
+
+#: dialog_scheme.c:129
+msgid "Mesh"
+msgstr "Maille"
+
+#: dialog_scheme.c:144
+msgid "Discretization"
+msgstr "Discretization"
+
+#: dialog_scheme.c:149
+msgid "CFL Number"
+msgstr "Numéro CFL"
+
+#: dialog_scheme.c:152
+msgid "Implicit number"
+msgstr "Numéro implicite"
+
+#: dialog_scheme.c:156
+msgid "Artificial viscosity"
+msgstr "Viscosité artificielle"
+
+#: dialog_scheme.c:159
+msgid "Mesh variation"
+msgstr "Variation de maille"
+
+#: dialog_scheme.c:162
+msgid "_Convergence"
+msgstr ""
+
+#: dialog_scheme.c:168
+msgid "Maximum mesh cells"
+msgstr "Maximum numéro de cellules"
+
+#: dialog_scheme.c:172
+msgid "Convergence test number"
+msgstr "Numéro de tests de convergence"
+
+#: dialog_options.c:11 dialog_options.c:35
+msgid "Maximum"
+msgstr ""
+
+#: dialog_options.c:15 dialog_options.c:39
+msgid "Minimum"
+msgstr ""
+
+#: dialog_options.c:32
+msgid "Position"
+msgstr "Position"
+
+#: dialog_options.c:56
+msgid "Variable"
+msgstr ""
+
+#: dialog_options.c:60 simulator.c:100
+msgid "Drawing options"
+msgstr "Options graphiques"
+
+#: simulator.c:14 simulator.c:102
+msgid "Help"
+msgstr "Aide"
+
+#: simulator.c:15
+msgid ""
+"wave v. 1.3.1 english\n"
+"Unsteady propagation wave program\n"
+"Author: Javier Burguete\n"
+"E-mail: jburguete@eead.csic.es\n"
+"Phone: (+034) 976491996"
+msgstr ""
+"wave v. 1.3.1 français\n"
+"Programme de propagation transitoire d'ondes\n"
+"Auteur: Javier Burguete\n"
+"E-mail: jburguete@eead.csic.es\n"
+"Téléphone: (+034) 976491996"
+
+#: simulator.c:57 simulator.c:101
+msgid "Save graphical"
+msgstr "Enregistrer graphique"
+
+#: simulator.c:91
+msgid "_Wave type"
+msgstr "Type d'_onde"
+
+#: simulator.c:91
+msgid "_Numerical scheme"
+msgstr "Schéma _numerique"
+
+#: simulator.c:92
+msgid "_Drawing options"
+msgstr "Options _graphiques"
+
+#: simulator.c:92
+msgid "S_tart simulation"
+msgstr "_Commencer simulation"
+
+#: simulator.c:93
+msgid "Sto_p simulation"
+msgstr "_Arrêter simulation"
+
+#: simulator.c:93
+msgid "_Save graphical"
+msgstr "_Enregistrer graphique"
+
+#: simulator.c:94
+msgid "_Help"
+msgstr "A_ide"
+
+#: simulator.c:94
+msgid "E_xit"
+msgstr "_Sortir"
+
+#: simulator.c:100
+msgid "Start simulation"
+msgstr "Commencer simulation"
+
+#: simulator.c:101
+msgid "Stop simulation"
+msgstr "Arrêter simulation"
+
+#: simulator.c:102
+msgid "Exit"
+msgstr "Sortir"
+
+#: simulator.c:106
+msgid "_Menu"
+msgstr ""
+
+#: simulator.c:157
+msgid "CPU time"
+msgstr "Temps de CPU"
+
+#: simulator.c:161
+msgid "Initial mass"
+msgstr "Masse initiale"
+
+#: simulator.c:165
+msgid "Final mass"
+msgstr "Masse finale"
+
+#: simulator.c:198
+msgid "Waves simulator"
+msgstr "Simulateur d'ondes"

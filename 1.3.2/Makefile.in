@@ -1,0 +1,93 @@
+bindir = @bindir@
+etcdir = @etcdir@
+libdir = @libdir@
+localdir = @localdir@
+mandir = manual/
+es = es/LC_MESSAGES/
+fr = fr/LC_MESSAGES/
+it = it/LC_MESSAGES/
+
+configs = config.h def.h Makefile
+CC = @CC@ -std=gnu99 -fopenmp @LTO@ -g
+
+objs = jb_def.o jb_math.o jb_win.o wave.o scheme.o draw.o \
+	dialog_wave.o dialog_scheme.o dialog_options.o simulator.o main.o
+src = jb/jb_def.c jb/jb_math.c jb/jb_win.c wave.c scheme.c draw.c \
+	dialog_wave.c dialog_scheme.c dialog_options.c simulator.c main.c
+flags = -c -Wall -DJBW=2 -DJBW_DRAW=2 -DJBW_GRAPHIC=2 @CPPFLAGS@ @GLIB_CFLAGS@ \
+	@PNG_CFLAGS@ @GTK_CFLAGS@
+flags_fast = $(flags) -O3
+flags_small = $(flags) -Os
+name = $(bindir)wave
+
+objs_bin = jb_def.o jb_math.o jb_win_bin.o wave.o scheme_bin.o main_bin.o
+src_bin = jb/jb_def.c jb/jb_math.c jb/jb_win.c wave.c scheme.c main.c
+flags_bin = -c -Wall -DJBW=1 @CPPFLAGS@ @GLIB_CFLAGS@
+flags_fast_bin = $(flags_bin) -O3
+flags_small_bin = $(flags_bin) -Os
+name_bin = $(bindir)wavebin
+
+all: $(name) $(name_bin) $(localdir)$(es)wave.mo $(localdir)$(fr)wave.mo
+
+$(name): $(objs)
+	$(CC) $(objs) -o $(name) @LDFLAGS@ @LIBS@ @GLIB_LIBS@ @PNG_LIBS@ @GTK_LIBS@
+
+$(name_bin): $(objs_bin)
+	$(CC) $(objs_bin) -o $(name_bin) @LDFLAGS@ -lm @GLIB_LIBS@
+
+jb_def.o: jb/jb_def.c jb/jb_def.h $(configs)
+	$(CC) jb/jb_def.c -o jb_def.o $(flags_small)
+
+jb_math.o: jb/jb_math.c jb/jb_math.h jb_def.o $
+	$(CC) jb/jb_math.c -o jb_math.o $(flags_fast)
+
+jb_win.o: jb/jb_win.c jb/jb_win.h jb_math.o
+	$(CC) jb/jb_win.c -o jb_win.o $(flags_small)
+
+wave.o: wave.c wave.h def.h jb_math.o
+	$(CC) wave.c -o wave.o $(flags_fast)
+
+scheme.o: scheme.c scheme.h wave.o jb_win.o
+	$(CC) scheme.c -o scheme.o $(flags_fast)
+
+dialog_wave.o: dialog_wave.c dialog_wave.h wave.o simulator.h
+	$(CC) dialog_wave.c -o dialog_wave.o $(flags_small)
+
+dialog_scheme.o: dialog_scheme.c dialog_scheme.h scheme.o
+	$(CC) dialog_scheme.c -o dialog_scheme.o $(flags_small)
+
+dialog_options.o: dialog_options.c dialog_options.h simulator.h jb_win.o
+	$(CC) dialog_options.c -o dialog_options.o $(flags_small)
+
+simulator.o: simulator.c simulator.h dialog_wave.o dialog_scheme.o \
+	dialog_options.o
+	$(CC) simulator.c -o simulator.o $(flags_small)
+
+draw.o: draw.c draw.h simulator.o
+	$(CC) draw.c -o draw.o $(flags_small)
+
+main.o: main.c draw.o
+	$(CC) main.c -o main.o $(flags_small)
+
+jb_win_bin.o: jb/jb_win.c jb/jb_win.h jb_math.o
+	$(CC) jb/jb_win.c -o jb_win_bin.o $(flags_small_bin)
+
+scheme_bin.o: scheme.c scheme.h wave.o jb_win.o
+	$(CC) scheme.c -o scheme_bin.o $(flags_fast_bin)
+
+main_bin.o: main.c scheme_bin.o
+	$(CC) main.c -o main_bin.o $(flags_small_bin)
+
+po/wave.pot: Makefile $(src)
+	xgettext -d wave -o po/wave.pot --from-code=UTF-8 $(src)
+#	msginit -l es -o po/$(es)wave.po -i po/wave.pot --no-translator
+#	msginit -l fr -o po/$(fr)wave.po -i po/wave.pot --no-translator
+	msgmerge -U po/$(es)wave.po po/wave.pot
+	msgmerge -U po/$(fr)wave.po po/wave.pot
+	vim -p */*/*/wave.po
+
+$(localdir)$(es)wave.mo: po/wave.pot po/$(es)wave.po
+	msgfmt -c -v -o $(localdir)$(es)wave.mo po/$(es)wave.po
+
+$(localdir)$(fr)wave.mo: po/wave.pot po/$(fr)wave.po
+	msgfmt -c -v -o $(localdir)$(fr)wave.mo po/$(fr)wave.po
