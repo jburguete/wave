@@ -3,7 +3,7 @@ WAVE: a software to calculate numerical propagation of waves.
 
 AUTHORS: Javier Burguete Tolosa.
 
-Copyright 2010-2013, AUTHORS.
+Copyright 2010-2014, AUTHORS.
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -31,7 +31,7 @@ OF SUCH DAMAGE.
  * \file config.h
  * \brief Configuration header file.
  * \author Javier Burguete Tolosa.
- * \copyright Copyright 2010-2013.
+ * \copyright Copyright 2010-2014.
  */
 #ifndef CONFIG__H
 #define CONFIG__H 1

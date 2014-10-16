@@ -3,7 +3,7 @@ WAVE: a software to calculate numerical propagation of waves.
 
 AUTHORS: Javier Burguete Tolosa.
 
-Copyright 2010-2013, AUTHORS.
+Copyright 2010-2014, AUTHORS.
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -31,12 +31,12 @@ OF SUCH DAMAGE.
  * \file mesh1d.c
  * \brief Source file to define an 1D mesh.
  * \author Javier Burguete Tolosa.
- * \copyright Copyright 2010-2013.
+ * \copyright Copyright 2010-2014.
  */
 #include "def.h"
 #include "jb/jb_xml.h"
 #include "cell1d.h"
-#include "wall1d.h"
+//#include "wall1d.h"
 #include "mesh_type.h"
 #include "mesh1d.h"
 
@@ -136,9 +136,10 @@ int mesh_1d_open_xml(Mesh1D *mesh, xmlNode *node)
 		buffer = "Unable to open the focus";
 		goto error1;
 	}
-	if (!xmlStrcmp(buffer, XML_INTEGRAL)) mesh->focus = MESH_APPROACH_FINITE_VOLUMES;
+	if (!xmlStrcmp(buffer, XML_INTEGRAL))
+		mesh->focus = MESH_APPROACH_FINITE_VOLUMES;
 	else if (!xmlStrcmp(buffer, XML_DISCRETE)) 
-		mesh->focus = MESH_APPROACH_FINITE_DIFERENCES;
+		mesh->focus = MESH_APPROACH_FINITE_DIFFERENCES;
 	else
 	{
 		buffer = "Unknown focus";
@@ -164,7 +165,7 @@ int mesh_1d_open_xml(Mesh1D *mesh, xmlNode *node)
 					mesh->wave->mass(mesh->wave, i * dx, (i + 1) * dx) / dx;
 			}
 			break;
-		case MESH_APPROACH_FINITE_DIFERENCES:
+		case MESH_APPROACH_FINITE_DIFFERENCES:
 			++mesh->n_cells;
 			if (!mesh_1d_create(mesh)) goto error1;
 			for (i = 0; i < mesh->n_cells; ++i)
@@ -219,7 +220,7 @@ int mesh_1d_open_xml(Mesh1D *mesh, xmlNode *node)
 					mesh->cell[i].dx;
 			}
 			break;
-		case MESH_APPROACH_FINITE_DIFERENCES:
+		case MESH_APPROACH_FINITE_DIFFERENCES:
 			++mesh->n_cells;
 			if (!mesh_1d_create(mesh)) goto error1;
 			for (i = 0, beta = 0.; i < mesh->n_cells - 1; ++i)

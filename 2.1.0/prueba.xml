@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<wave type="linear" dimensions="1">
+	<domain xmax="100" tmax="60"/>
+	<shape type="square" x0="20" w="20" u0="0.1" h="0.8"/>
+	<mesh type="regular" approach="integral" dx="2"/>
+</wave>

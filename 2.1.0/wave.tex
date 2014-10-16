@@ -1,0 +1,687 @@
+\documentclass[a4paper,10pt]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+
+\title{Manual del programa wave (versión 2.1.0)}
+
+\author{Javier Burguete}
+
+\newcommand{\EQ}[2]{\begin{equation}#1\label{#2}\end{equation}}
+
+\newcommand{\PICTURE}[4]
+{
+	\begin{figure}[ht]
+		\centering
+		\begin{picture}(#1)#2\end{picture}
+		\caption{#3\label{#4}}
+	\end{figure}
+}
+
+\newcommand{\C}[1]{\left[#1\right]}
+\newcommand{\HALF}{\frac{1}{2}}
+\newcommand{\LL}[1]{\left\{#1\right\}}
+\newcommand{\PA}[1]{\left(#1\right)}
+\newcommand{\PARTIAL}[2]{\frac{\partial#1}{\partial#2}}
+
+\newcommand{\IR}{_{i+(1/2)}}
+\newcommand{\IX}{\delta x}
+\newcommand{\WAVE}{\emph{wave}}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\chapter{Ecuaciones de propagación de ondas}
+
+El programa \WAVE es un banco de pruebas de la calidad con que los métodos numéricos resuelven las ecuaciones de propagación de ondas escalares.
+
+\section{Formas de las ecuaciones escalares de propagación 1D}
+
+Las ecuaciones escalares de propagación 1D pueden expresarse en forma conservativa:
+\EQ{\PARTIAL{U(x,t)}{t}+\PARTIAL{F(U(x,t))}{x}=0}{EqOndasConservativa}
+con $U$ la variable escalar conservada, $F$ el flujo, $t$ el tiempo y $x$ la coordenada espacial. Derivando el término de flujo se obtiene la forma característica:
+\EQ{\PARTIAL{U(x,t)}{t}+J(U(x,t))\,\PARTIAL{U(x,t)}{x}=0}{EqOndasCaracteristica}
+con $J=\PARTIAL{F}{U}$ el jacobiano del flujo. Integrando en espacio y tiempo (\ref{EqOndasConservativa}) se obtiene la forma integral de la ecuación:
+\EQ
+{
+	\int_{x_1}^{x_2}\C{U\PA{x,t_2}-U\PA{x,t_1}}\,dx=
+	\int_{t_1}^{t_2}\C{F\PA{x_1,t}-F\PA{x_2,t}}\,dt
+}{EqOndasIntegral}
+
+Ejemplos de ecuaciones escalares de propagación, resueltos por el programa \WAVE, son la ecuación escalar lineal de ondas:
+\EQ{F=v\,U,\quad J=v,\quad H=0}{EqLineal}
+donde $v$ es constante y corresponde a la velocidad de propagación, y $H=\PARTIAL{J}{U}$ el hessiano del flujo. Otro ejemplo es la ecuación de Burgers, que es una ecuación no lineal muy relacionada con las ecuaciones de la Mecánica de Fluidos:
+\EQ{F=\frac{U^2}{2},\quad J=U,\quad H=1}{EqBurgers}
+
+Finalmente, de la ecuación en forma conservativa (\ref{EqOndasConservativa}) se puede obtener la velocidad $V$ de propagación de una discontinuidad. Hacemos un cambio de sistema de referencia a uno que se mueve con la discontinuidad $(x',t')$. Se cumple:
+\[
+	x'=x-Vt,\quad t'=t,\quad
+	\PARTIAL{}{x}=\PARTIAL{x'}{x}\,\PARTIAL{}{x'}+\PARTIAL{t'}{x}\,\PARTIAL{}{t'}=\PARTIAL{}{x'},
+\]
+\EQ
+{
+	\PARTIAL{}{t}=\PARTIAL{x'}{t}\,\PARTIAL{}{x'}+\PARTIAL{t'}{t}\,\PARTIAL{}{t'}=-V\,\PARTIAL{}{x'}+\PARTIAL{}{t'}
+}{EqOndasCambio}
+y sustituyendo en (\ref{EqOndasConservativa}) se obtiene:
+\EQ{\PARTIAL{U}{t'}+\PARTIAL{(F-V\,U)}{x'}=0}{EqOndasConservativaCambio}
+Integrando espacialmente en una distancia infinitesimal a ambos lados de la posición $X$ de la discontinuidad:
+\EQ{\int_{X-dx}^{X+dx}\PARTIAL{U}{t'}\,dx'=\PA{F-V\,U}_{x'=X-dx}-\PA{F-V\,U}_{x'=X+dx}}{EqOndasIntegralCambio}
+En el sistema que se mueve con la discontinuidad, ésta permanece estacionaria deforma que las derivadas temporales están definidas y son finitas. Entonces el miembro de la izquierda de esta ecuación es infinitesimal y la ecuación, llevando al límite $dx\rightarrow 0$ se reduce a:
+\EQ{\delta\PA{F-V\,U}=0\Rightarrow\;V=\frac{\delta F}{\delta U}}{EqOndasDiscontinuidad}
+con $\delta$ la variación espacial en la discontinuidad. Dada la discontinuidad representada por la variable $U_1$ a la izquierda y $U_2$ a la derecha, las velocidades de propagación para las ecuaciones lineal (\ref{EqLineal}) y de Burgers (\ref{EqBurgers}) son:
+\begin{itemize}
+\item Lineal:
+\EQ{V=\frac{\delta F}{\delta U}=\frac{v\,U_2-v\,U_1}{U_2-U_1}=v}{EqDiscontinuidadLineal}
+\item Burgers:
+\EQ{V=\frac{\delta F}{\delta U}=\frac{\HALF\,U_2^2-\HALF\,U_1^2}{U_2-U_1}=\frac{U_1+U_2}{2}}{EqDiscontinuidadBurgers}
+\end{itemize}
+
+\chapter{Tests con solución analítica en el programa wave}
+
+\section{Ecuación escalar lineal 1D}
+
+Dada una solución inicial cualquiera $U(x,0)$ definida en un dominio $x\in\C{x_{in},x_{out}}$ y unas condiciones de contorno definidas en la entrada $U\PA{x_{in},t}$ en caso de velocidades de propagación positivas ($v>0$) o en la salida $U(x_{out},t)$ en caso de velocidades negativas, la ecuación escalar lineal tiene como solución analítica:
+\EQ
+{
+	U(x,t)=\left\{\begin{array}{lc}U(x-v\,t,0),&x\in(x_{in}+v\,t,x_{out}+v\,t)\\
+	U\PA{x_{in},t-\frac{x-x_{in}}{v}},&v>0,\;\; x\in\C{x_{in},x_{in}+v\,t}\\
+	U\PA{x_{out},t-\frac{x-x_{out}}{v}},&v<0,\;\; x\in\C{x_{out}+v\,t,x_{out}}\end{array}\right.
+}{EqILinealSolucion}
+Por tanto la solución está determinada por las condiciones iniciales $U(x,0)$ y por la condición de contorno en la entrada $U\PA{x_{in},t}$ para velocidades de propagación positivas o por la condición de contorno en la salida $U\PA{x_{out},t}$ para velocidades negativas. Además, será de utilidad para los métodos numéricos conocer la integral de la variable entre dos puntos:
+\EQ{M\PA{x_1,x_2,t}=\int_{x_1}^{x_2}U(x,t)\,dx}{EqIMasa}
+y el flujo de variable que atraviesa un punto del dominio:
+\EQ{\phi(x,t)=\int_0^tF(x,t')\,dt'=a\int_0^tU(x,t')\,dt'}{EqIFlujo}
+
+\subsection{Onda cuadrada}
+
+Definimos las condiciones iniciales de la onda según las variables representadas en la figura~\ref{FigILinealOndaCuadrada},
+\PICTURE{260,100}
+{
+	\put(10,10){\vector(1,0){240}}
+	\put(10,10){\vector(0,1){90}}
+	\put(240,0){$x$}
+	\put(0,90){$U$}
+	\put(10,30){\line(1,0){40}}
+	\put(50,30){\line(0,1){30}}
+	\put(50,60){\line(1,0){40}}
+	\put(90,60){\line(0,-1){30}}
+	\put(90,30){\line(1,0){160}}
+	\qbezier[30](70,10)(70,40)(70,70)
+	\put(10,65){\vector(1,0){60}}
+	\put(70,65){\vector(-1,0){60}}
+	\put(40,68){$x_0$}
+	\put(20,10){\vector(0,1){20}}
+	\put(20,30){\vector(0,-1){20}}
+	\put(22,16){$U_0$}
+	\qbezier[10](90,60)(100,60)(110,60)
+	\put(100,30){\vector(0,1){30}}
+	\put(100,60){\vector(0,-1){30}}
+	\put(105,41){$h$}
+	\put(50,40){\vector(1,0){40}}
+	\put(90,40){\vector(-1,0){40}}
+	\put(67,42){$w$}
+	\put(130,41){$\Rightarrow$}
+	\qbezier[60](170,30)(170,45)(170,60)
+	\qbezier[80](170,60)(190,60)(210,60)
+	\qbezier[60](210,60)(210,45)(210,30)
+	\qbezier[10](170,60)(170,70)(170,80)
+	\put(10,75){\vector(1,0){160}}
+	\put(170,75){\vector(-1,0){160}}
+	\put(90,78){$x_a$}
+	\qbezier[15](210,60)(210,75)(210,90)
+	\put(10,85){\vector(1,0){200}}
+	\put(210,85){\vector(-1,0){200}}
+	\put(110,88){$x_c$}
+}{Condiciones iniciales y evolución temporal de una onda cuadrada}{FigILinealOndaCuadrada}
+donde en el instante inicial $x_0$ es el centro de la onda, $w$ su anchura, $U_0$ su altura base y $h$ su amplitud. Además, caracterizaremos una onda cuadrada en un instante dado según las posiciones $x_a$ y $x_c$ de las dos discontinuidades junto con los tiempos de paso de ambas discontinuidades por un punto $t_a$ y $t_c$, entonces:
+\[x_a(t)=x_0-\frac{w}{2}+v\,t,\quad x_c(t)=x_0+\frac{w}{2}+v\,t,\]
+\[
+	U(x,t)=U_0+\left\{\begin{array}{lc}
+	0,&x\notin\PA{x_a,x_c}\\
+	h,&x\in\PA{x_a,x_c}\end{array}\right.
+\]
+\[
+	M\PA{x_1,x_2,t}=\PA{x_2-x_1}\,U_0+h\,\left\{\begin{array}{lc}
+	0,&x_2\leq x_a\\
+	0,&x_c\leq x_1\\
+	\PA{x_c-x_1},&x_a\leq x_1\leq x_c\leq x_2\\
+	\PA{x_2-x_1},&x_a\leq x_1\leq x_2\leq x_c\\
+	\PA{x_2-x_a},&x_1\leq x_a\leq x_2\leq x_c\\
+	w,&x_1\leq x_a\leq x_c\leq x_2\end{array}\right.
+\]
+\[t_a(x)=\frac{x-x_0+\frac{w}{2}}{v},\quad t_c(x)=\frac{x-x_0-\frac{w}{2}}{v},\]
+\EQ
+{
+	\phi(x,t)=v\,t\,U_0+h\,\left\{\begin{array}{lc}
+	0,&v>0,\;t<t_c\\
+	0,&v>0,\;t_a\leq 0\\
+	v\,\PA{t-t_c},&v>0,\;0<t_c\leq t<t_a\\
+	w,&v>0,\;0<t_c\leq t_a\leq t\\
+	v\,t,&v>0,\;t_c\leq 0\leq t<t_a\\
+	v\,t_a,&v>0,\;t_c\leq 0<t_a\leq t\\
+	0,&v\leq 0,\;t<t_a\\
+	0,&v\leq 0,\;t_c\leq 0\\
+	v\,\PA{t-t_a},&v\leq 0,\;0<t_a\leq t<t_c\\
+	w,&v\leq 0,\;0<t_a\leq t_c\leq t\\
+	v\,t,&v\leq 0,\;t_a\leq 0\leq t<t_c\\
+	v\,t_c,&v\leq 0,\;t_a\leq 0<t_c\leq t\end{array}\right.
+}{EqILinealOndaCuadrada}
+
+\subsection{Onda triangular}
+
+Definimos las condiciones iniciales de la onda según las variables representadas en la figura~\ref{FigILinealOndaTriangular},
+\PICTURE{260,110}
+{
+	\put(10,10){\vector(1,0){240}}
+	\put(10,10){\vector(0,1){100}}
+	\put(240,0){$x$}
+	\put(0,100){$U$}
+	\put(10,30){\line(1,0){40}}
+	\put(50,30){\line(2,3){20}}
+	\put(70,60){\line(2,-3){20}}
+	\put(90,30){\line(1,0){160}}
+	\qbezier[30](70,10)(70,40)(70,70)
+	\put(10,65){\vector(1,0){60}}
+	\put(70,65){\vector(-1,0){60}}
+	\put(40,68){$x_0$}
+	\put(20,10){\vector(0,1){20}}
+	\put(20,30){\vector(0,-1){20}}
+	\put(22,16){$U_0$}
+	\qbezier[15](70,60)(85,60)(100,60)
+	\put(95,30){\vector(0,1){30}}
+	\put(95,60){\vector(0,-1){30}}
+	\put(100,41){$h$}
+	\qbezier[5](50,30)(50,25)(50,20)
+	\qbezier[5](90,30)(90,25)(90,20)
+	\put(50,25){\vector(1,0){40}}
+	\put(90,25){\vector(-1,0){40}}
+	\put(67,27){$w$}
+	\put(130,41){$\Rightarrow$}
+	\qbezier[70](170,30)(180,45)(190,60)
+	\qbezier[70](210,30)(200,45)(190,60)
+	\qbezier[25](170,30)(170,55)(170,80)
+	\put(10,75){\vector(1,0){160}}
+	\put(170,75){\vector(-1,0){160}}
+	\put(90,78){$x_a$}
+	\qbezier[15](190,60)(190,75)(190,90)
+	\put(10,85){\vector(1,0){180}}
+	\put(190,85){\vector(-1,0){180}}
+	\put(100,88){$x_b$}
+	\qbezier[35](210,30)(210,65)(210,100)
+	\put(10,95){\vector(1,0){200}}
+	\put(210,95){\vector(-1,0){200}}
+	\put(110,98){$x_c$}
+}{Condiciones iniciales y evolución temporal de una onda triangular}{FigILinealOndaTriangular}
+donde en el instante inicial $x_0$ es el centro de la onda, $w$ su anchura, $U_0$ su altura base y $h$ su amplitud. Además, caracterizaremos una onda triangular en un instante dado según las posiciones $x_a$ y $x_c$ de las dos extremos del triángulo y con $x_b$ la posción de la cúspide. Los tiempos de paso de estos 3 puntos por un punto los denotaremos como $t_a$, $t_c$ y $t_b$ respectivamente. Se cumple:
+\[
+	x_b(t)=x_0+v\,t,\quad
+	x_a(t)=x_0-\frac{w}{2}+v\,t,\quad
+	x_c(t)=x_0+\frac{w}{2}+v\,t,
+\]
+\[
+	U(x,t)=U_0+\frac{2h}{w}\,\left\{\begin{array}{lc}
+	0,&x\notin\PA{x_a,x_c}\\
+	x-x_a,&x\in\left(x_a,x_b\right]\\
+	x_c-x,&x\in\PA{x_b,x_c}\end{array}\right.
+\]
+\[M\PA{x_1,x_2,t}=\PA{x_2-x_1}\,U_0+\]
+\[
+	h\,\left\{\begin{array}{lc}
+	0,&x_2\leq x_a\\
+	0,&x_c\leq x_1\\
+	\frac{\PA{x_c-x_1}^2}{w},&x_b\leq x_1\leq x_c\leq x_2\\
+	\frac{\PA{x_1-x_2}\,\PA{x_2+x_1-2x_c}}{w},&
+	x_b\leq x_1\leq x_2\leq x_c\\
+	\frac{w}{4}+\frac{\PA{x_b-x_1}\PA{x_b+x_1-2x_a}}{w},&
+	x_a\leq x_1\leq x_b\leq x_c\leq x_2\\
+	\frac{\PA{x_b-x_1}\,\PA{x_b+x_1-2x_a}}{w}+
+	\frac{\PA{x_b-x_2}\PA{x_2+x_b-2x_c}}{w},&
+	x_a\leq x_1\leq x_b\leq x_2\leq x_c\\
+	\frac{\PA{x_2-x_1}\,\PA{x_2+x_1-2x_a}}{w},&
+	x_a\leq x_1\leq x_2\leq x_b\\
+	\frac{w}{4}+\frac{\PA{x_b-x_2}\PA{x_2+x_b-2x_c}}{w},&
+	x_1\leq x_a\leq x_b\leq x_2\leq x_c\\
+	\frac{w}{2},&x_1\leq x_a\leq x_c\leq x_2\\
+	\frac{\PA{x_2-x_a}^2}{w},&x_1\leq x_a\leq x_2\leq x_b\end{array}\right.
+\]
+\[
+	t_b(x)=\frac{x-x_0}{v},\quad
+	t_a(x)=\frac{x-x_0+\frac{w}{2}}{v},\quad
+	t_c(x)=\frac{x-x_0-\frac{w}{2}}{v},
+\]
+\[\phi(x,t)=v\,t\,U_0+\]
+\EQ
+{
+	\frac{h}{2}\,\left\{\begin{array}{lc}
+	0,&v>0,\;t<t_c\\
+	0,&v>0,\;t_a\leq 0\\
+	w,&v>0,\;0\leq t_c\leq t_a\leq t\\
+	\frac{w}{2}+\frac{v\,\PA{t-t_b}\,\PA{t+t_b-2t_a}}{t_b-t_a},&
+	v>0,\;0\leq t_c\leq t_b\leq t<t_a\\
+	\frac{v\,\PA{t-t_c}^2}{t_b-t_c},&v>0,\;0<t_c\leq t<t_b\\
+	\frac{w}{2}+\frac{v\,t_b\,\PA{t_b-2t_c}}{t_b-t_c},&
+	v>0,\;t_c<0<t_b\leq t_a<t\\
+	v\,\C{\frac{\PA{t-t_b}\PA{t+t_b-2t_a}}{t_b-t_a}+
+	\frac{t_b\PA{t_b-2t_c}}{t_b-t_c}},&v>0,\;t_c<0\leq t_b\leq t<t_a\\
+	\frac{v\,t\,\PA{t-2t_c}}{t_b-t_c},&v>0,\;t_c\leq 0\leq t<t_b\\
+	\frac{v\,t\,\PA{t-2t_a}}{t_b-t_a},&v>0,\;t_b\leq 0\leq t<t_a\\
+	\frac{v\,t_a^2}{t_a-t_b},&v>0,\;t_b\leq 0<t_a<t\\
+	0,&v\leq 0,\;t<t_a\\
+	0,&v\leq 0,\;t_c\leq 0\\
+	w,&v\leq 0,\;0\leq t_a\leq t_c\leq t\\
+	\frac{w}{2}+\frac{v\,\PA{t-t_b}\PA{t+t_b-2t_c}}{t_b-t_c},&
+	v\leq 0,\;0\leq t_a\leq t_b\leq t<t_c\\
+	\frac{v\,\PA{t-t_a}^2}{t_b-t_a},&v\leq 0,\;0<t_a\leq t<t_b\\
+	\frac{w}{2}+\frac{v\,t_b\PA{t_b-2t_a}}{t_b-t_a},&
+	v\leq 0,\;t_a<0<t_b\leq t_c<t\\
+	v\,\C{\frac{\PA{t-t_b}\PA{t+t_b-2t_c}}{t_b-t_c}+
+	\frac{t_b\PA{t_b-2t_a}}{t_b-t_a}},&v\leq 0,\;t_a<0\leq t_b\leq t<t_c\\
+	\frac{v\,t\,\PA{t-2t_a}}{t_b-t_a},&v\leq 0,\;t_a\leq 0\leq t<t_b\\
+	\frac{v\,t\,\PA{t-2t_c}}{t_b-t_c},&v\leq 0,\;t_b\leq 0\leq t<t_c\\
+	\frac{v\,t_c^2}{t_c-t_b},&v\leq 0,\;t_b\leq 0<t_c<t\end{array}\right.
+}{EqILinealOndaTriangular}
+
+\subsection{Onda sinusoidal}
+
+Definimos las condiciones iniciales de la onda según las variables representadas en la figura~\ref{FigILinealOndaSinusoidal},
+\PICTURE{260,100}
+{
+	\put(10,10){\vector(1,0){240}}
+	\put(10,10){\vector(0,1){90}}
+	\put(240,0){$x$}
+	\put(0,90){$U$}
+	\put(10,30){\line(1,0){40}}
+	\qbezier(50,30)(55,30)(60,45)
+	\qbezier(60,45)(70,75)(80,45)
+	\qbezier(90,30)(85,30)(80,45)
+	\put(90,30){\line(1,0){160}}
+	\qbezier[30](70,10)(70,40)(70,70)
+	\put(10,65){\vector(1,0){60}}
+	\put(70,65){\vector(-1,0){60}}
+	\put(40,68){$x_0$}
+	\put(20,10){\vector(0,1){20}}
+	\put(20,30){\vector(0,-1){20}}
+	\put(22,16){$U_0$}
+	\qbezier[20](70,60)(90,60)(110,60)
+	\put(100,30){\vector(0,1){30}}
+	\put(100,60){\vector(0,-1){30}}
+	\put(105,41){$h$}
+	\qbezier[5](50,30)(50,25)(50,20)
+	\qbezier[5](90,30)(90,25)(90,20)
+	\put(50,25){\vector(1,0){40}}
+	\put(90,25){\vector(-1,0){40}}
+	\put(67,27){$w$}
+	\put(130,41){$\Rightarrow$}
+	\qbezier[40](170,30)(175,30)(180,45)
+	\qbezier[80](180,45)(190,75)(200,45)
+	\qbezier[40](210,30)(205,30)(200,45)
+	\qbezier[25](170,30)(170,55)(170,80)
+	\put(10,75){\vector(1,0){160}}
+	\put(170,75){\vector(-1,0){160}}
+	\put(90,78){$x_a$}
+	\qbezier[30](210,30)(210,60)(210,90)
+	\put(10,85){\vector(1,0){200}}
+	\put(210,85){\vector(-1,0){200}}
+	\put(110,88){$x_c$}
+}{Condiciones iniciales y evolución temporal de una onda sinusoidal}{FigILinealOndaSinusoidal}
+donde en el instante inicial $x_0$ es el centro de la onda, $w$ su anchura, $U_0$ su altura base y $h$ su amplitud. Además, caracterizaremos la onda sinusoidal en un instante dado según las posiciones extremas de la onda $x_a$ y $x_c$ junto con los tiempos de paso de ambas posiciones por un punto $t_a$ y $t_c$, entonces:
+\[x_a(t)=x_0-\frac{w}{2}+v\,t,\quad x_c(t)=x_0+\frac{w}{2}+v\,t,\]
+\[
+	U\PA{x,t}=U_0+\left\{\begin{array}{lc}
+	h\,\cos^2\C{\frac{\pi\,\PA{x-x_0-v\,t}}{w}},&x\in\PA{x_a,x_c}\\
+	0,&x\notin\PA{x_a,x_c}\end{array}\right.
+\]
+\[M\PA{x_1,x_2,t}=\PA{x_2-x_1}\,U_0+\frac{h}{2}\]
+\[
+	\left\{\begin{array}{lc}
+	0,&x_2\leq x_a\\
+	0,&x_c\leq x_1\\
+	x_c-x_1-\frac{w}{2\pi}\,\sin\C{\frac{2\pi\,\PA{x_1-x_a}}{w}},&
+	x_a\leq x_1\leq x_c\leq x_2\\
+	x_2-x_1-\frac{w}{2\pi}\,\LL{\sin\C{\frac{2\pi\,\PA{x_2-x_a}}{w}}-
+	\sin\C{\frac{2\pi\,\PA{x_1-x_a}}{w}}},&x_a\leq x_1\leq x_2\leq x_c\\
+	x_2-x_a-\frac{w}{2\pi}\,\sin\C{\frac{2\pi\,\PA{x_2-x_a}}{w}},&
+	x_1\leq x_a\leq x_2\leq x_c\\
+	w,&x_1\leq x_a\leq x_c\leq x_2\\
+	\end{array}\right.
+\]
+\[
+	t_a(x)=\frac{x-x_0+\frac{w}{2}}{v},\quad
+	t_c(x)=\frac{x-x_0-\frac{w}{2}}{v},
+\]
+\[\phi(x,t)=v\,t\,U_0+\]
+\EQ
+{
+	\frac{h}{2}\,\left\{\begin{array}{lc}
+	0,&v>0,\;t<t_c\\
+	0,&v>0,\;t_a\leq 0\\
+	v\,\PA{t-t_c}-\frac{w}{2\pi}\sin\C{\frac{2\pi\,\PA{x-x_0-v\,t}}{w}},&
+	v>0,\;0<t_c\leq t<t_a\\
+	w,&v>0,\;0<t_c\leq t_a\leq t\\
+	v\,t+\frac{w}{2\pi}\,\LL{\sin\C{\frac{2\pi\,\PA{x-x_0}}{w}}-
+	\sin\C{\frac{2\pi\,\PA{x-x_0-v\,t}}{w}}},&v>0,\;t_c\leq 0\leq t<t_a\\
+	v\,t_a+\frac{w}{2\pi}\sin\C{\frac{2\pi\,\PA{x-x_0}}{w}},&
+	v>0,\;t_c\leq 0<t_a\leq t\\
+	0,&v\leq 0,\;t<t_a\\
+	0,&v\leq 0,\;t_c\leq 0\\
+	v\,\PA{t-t_a}-\frac{w}{2\pi}\sin\C{\frac{2\pi\,\PA{x-x_0-v\,t}}{w}},&
+	v\leq 0,\;0<t_a\leq t<t_c\\
+	w,&v\leq 0,\;0<t_a\leq t_c\leq t\\
+	v\,t+\frac{w}{2\pi}\,\LL{\sin\C{\frac{2\pi\,\PA{x-x_0}}{w}}-
+	\sin\C{\frac{2\pi\,\PA{x-x_0-v\,t}}{w}}},&v\leq 0,\;t_a\leq 0\leq t<t_c\\
+	v\,t_c+\frac{w}{2\pi}\sin\C{\frac{2\pi\,\PA{x-x_0}}{w}},&
+	t_a\leq 0<t_c\leq t\\
+	\end{array}\right.
+}{EqILinealOndaSinusoidal}
+
+\subsection{Onda gaussiana}
+
+Definimos las condiciones iniciales de la onda según las variables representadas en la figura~\ref{FigILinealOndaGaussiana},
+\PICTURE{160,100}
+{
+	\put(10,10){\vector(1,0){140}}
+	\put(10,10){\vector(0,1){90}}
+	\put(140,0){$x$}
+	\put(0,90){$U$}
+	\put(10,30){\line(1,0){40}}
+	\qbezier(50,30)(57.5,30)(60,40)
+	\qbezier(60,40)(70,80)(80,40)
+	\qbezier(90,30)(82.5,30)(80,40)
+	\put(90,30){\line(1,0){60}}
+	\qbezier[30](70,10)(70,40)(70,70)
+	\put(10,65){\vector(1,0){60}}
+	\put(70,65){\vector(-1,0){60}}
+	\put(40,68){$x_0$}
+	\put(20,10){\vector(0,1){20}}
+	\put(20,30){\vector(0,-1){20}}
+	\put(22,16){$U_0$}
+	\qbezier[20](70,60)(90,60)(110,60)
+	\put(100,30){\vector(0,1){30}}
+	\put(100,60){\vector(0,-1){30}}
+	\put(105,41){$h$}
+	\put(60,40){\vector(1,0){20}}
+	\put(80,40){\vector(-1,0){20}}
+	\put(67,42){$w$}
+}{Condiciones iniciales de una onda gaussiana}{FigILinealOndaGaussiana}
+donde en el instante inicial $x_0$ es el centro de la onda, $w$ su anchura, $U_0$ su altura base y $h$ su amplitud. Entonces:
+\[U\PA{x,t}=U_0+h\exp\C{-\PA{\frac{2\PA{x-x_0-v\,t}}{w}}^2}\]
+\[
+	M\PA{x_1,x_2,t}=\PA{x_2-x_1}\,U_0+\frac{w\,h\,\sqrt{\pi}}{4}
+	\left[\mathrm{erf}\PA{2\frac{x_2-x_0-v\,t}{w}}-\right.
+\]
+\[
+	\left.\mathrm{erf}\PA{2\frac{x_1-x_0-v\,t}{w}}\right]
+\]
+\EQ
+{
+	\phi(x,t)=v\,t\,U_0-\frac{w\,h\,\sqrt{\pi}}{4}
+	\C{\mathrm{erf}\PA{2\frac{x-x_0-v\,t}{w}}-\mathrm{erf}\PA{2\frac{x-x_0}{w}}}
+}{EqILinealOndaGaussian}
+con:
+\EQ{\mathrm{erf}=\frac{2}{\sqrt{\pi}}\int_0^x\exp\PA{-t^2}\,dt}{EqFuncionError}
+la función estándar de error.
+
+\section{Ecuación de Burgers}
+
+
+\subsection{Onda ``diente de sierra''}
+
+Definimos las condiciones iniciales de la onda según las variables representadas en la figura~\ref{FigIBurgersOndaSierra},
+\begin{figure}[ht]
+\centering
+(a)
+\begin{picture}(260,100)
+	\put(10,10){\vector(1,0){240}}
+	\put(10,10){\vector(0,1){90}}
+	\put(240,0){$x$}
+	\put(0,90){$U$}
+	\put(10,30){\line(1,0){40}}
+	\put(50,30){\line(4,3){40}}
+	\put(90,60){\line(0,-1){30}}
+	\put(90,30){\line(1,0){160}}
+	\qbezier[30](70,10)(70,40)(70,70)
+	\put(10,65){\vector(1,0){60}}
+	\put(70,65){\vector(-1,0){60}}
+	\put(40,68){$x_0$}
+	\put(20,10){\vector(0,1){20}}
+	\put(20,30){\vector(0,-1){20}}
+	\put(22,16){$U_0$}
+	\qbezier[5](90,60)(95,60)(100,60)
+	\put(95,30){\vector(0,1){30}}
+	\put(95,60){\vector(0,-1){30}}
+	\put(100,41){$h$}
+	\qbezier[5](50,30)(50,25)(50,20)
+	\qbezier[5](90,30)(90,25)(90,20)
+	\put(50,25){\vector(1,0){40}}
+	\put(90,25){\vector(-1,0){40}}
+	\put(67,27){$w$}
+	\put(130,41){$\Rightarrow$}
+	\qbezier[130](160,30)(190,40)(220,50)
+	\qbezier[40](220,30)(220,40)(220,50)
+	\qbezier[25](160,30)(160,55)(160,80)
+	\put(10,75){\vector(1,0){150}}
+	\put(160,75){\vector(-1,0){150}}
+	\put(85,78){$x_a$}
+	\qbezier[20](220,50)(220,70)(220,90)
+	\put(10,85){\vector(1,0){210}}
+	\put(220,85){\vector(-1,0){210}}
+	\put(110,88){$x_c$}
+\end{picture}
+\\(b)
+\begin{picture}(260,90)
+	\put(10,10){\vector(1,0){240}}
+	\put(10,10){\vector(0,1){80}}
+	\put(240,0){$x$}
+	\put(0,80){$U$}
+	\put(10,50){\line(1,0){40}}
+	\put(50,50){\line(0,-1){30}}
+	\put(50,20){\line(4,3){40}}
+	\put(90,50){\line(1,0){160}}
+	\qbezier[25](70,10)(70,35)(70,60)
+	\put(10,55){\vector(1,0){60}}
+	\put(70,55){\vector(-1,0){60}}
+	\put(40,58){$x_0$}
+	\put(20,10){\vector(0,1){40}}
+	\put(20,50){\vector(0,-1){40}}
+	\put(22,16){$U_0$}
+	\qbezier[5](50,20)(45,20)(40,20)
+	\put(45,20){\vector(0,1){30}}
+	\put(45,50){\vector(0,-1){30}}
+	\put(30,31){$-h$}
+	\qbezier[5](50,20)(50,15)(50,10)
+	\qbezier[20](90,50)(90,30)(90,10)
+	\put(50,15){\vector(1,0){40}}
+	\put(90,15){\vector(-1,0){40}}
+	\put(67,17){$w$}
+	\put(130,31){$\Rightarrow$}
+	\qbezier[130](160,30)(190,40)(220,50)
+	\qbezier[40](160,30)(160,40)(160,50)
+	\qbezier[15](160,40)(160,55)(160,70)
+	\put(10,65){\vector(1,0){150}}
+	\put(160,65){\vector(-1,0){150}}
+	\put(85,68){$x_c$}
+	\qbezier[20](220,40)(220,60)(220,80)
+	\put(10,75){\vector(1,0){210}}
+	\put(220,75){\vector(-1,0){210}}
+	\put(110,78){$x_a$}
+\end{picture}
+\caption{Condiciones iniciales y evolución temporal de una onda ``diente de sierra'' con amplitudes (a) positiva y (b) negativa.\label{FigIBurgersOndaSierra}}
+\end{figure}
+donde en el instante inicial $x_0$ es el centro de la onda, $w$ su anchura, $U_0$ su altura base y $h$ su amplitud. Además, caracterizaremos una onda ``diente de sierra'' en un instante dado según las posiciones $x_c$ de la cúspide del triángulo y $x_a$ de otro extremo del triángulo. La cúspide pasará hasta un máximo de dos veces por cada punto, cuyos tiempos denotaremos como $t_{c+}$ y $t_{c-}$. El tiempo de paso del otro extremo del triángulo por un punto lo denotaremos como $t_a$. Se cumple:
+\[
+	x_a(t)=x_0+U_0\,t+w\,\left\{\begin{array}{lc}
+	\frac{-1}{2},&h>0\\
+	\HALF,&h\leq 0\end{array}\right.
+\]
+\[
+	x_c(t)=x_0+U_0\,t+w\,\left\{\begin{array}{lc}
+	\sqrt{1+\frac{h\,t}{w}}-\HALF,&h>0\\
+	\HALF-\sqrt{1-\frac{h\,t}{w}},&h\leq 0\end{array}\right.
+\]
+\[
+	U(x,t)=U_0+h\,\left\{\begin{array}{lc}
+	\frac{x-x_a}{w+h\,t},&h>0,\;x\in\PA{x_a,x_c}\\
+	0,&h>0,\,x\notin\PA{x_a,x_c}\\
+	\frac{x_a-x}{w-h\,t},&h\leq 0,\;x\in\PA{x_c,x_a}\\
+	0,&h\leq 0,\;x\notin\PA{x_c,x_a}\end{array}\right.
+\]
+\[
+	M\PA{x_1,x_2,t}=U_0\,\PA{x_2-x_1}+\frac{h}{2}\,\left\{\begin{array}{lc}
+	0,&h>0,\;x_2\leq x_a\\
+	\frac{\PA{x_2-x_a}^2}{w+ht},&h>0,\;x_1<x_a<x_2\leq x_c\\
+	w,&h>0,\;x_1<x_a\leq x_c<x_2\\
+	\frac{\PA{x_2-x_a}^2-\PA{x_1-x_a}^2}{w+ht},&h>0,\;x_a<x_1\leq x_2\leq x_c\\
+	w-\frac{\PA{x_1-x_a}^2}{w+ht},&h>0,\;x_a<x_1\leq x_c\leq x_2\\
+	0,&h>0,\;x_c\leq x_1\\
+	\end{array}\right.
+\]
+\[
+	t_a(x)=\left\{\begin{array}{lc}
+	\frac{x-x_0+\frac{w}{2}}{U_0},&h>0\\
+	\frac{x-x_0-\frac{w}{2}}{U_0},&h\leq 0\end{array}\right.
+\]
+\[
+	t_{c\pm}(x)=\left\{\begin{array}{lc}
+	\frac{\PA{U_0\,t_a}^2-w^2}{wh},&U_0=0,\;h>0\\
+	t_a+\frac{w\,\C{\frac{h}{2}\pm\sqrt{\frac{h^2}{4}+
+	U_0^2\,\PA{1+\frac{h\,t_a}{w}}}}}{U_0^2},&U_0\neq 0,\;h>0\\
+	\frac{w^2-\PA{U_0\,t_a}^2}{wh},&U_0=0,\;h\leq 0\\
+	t_a+\frac{w\,\C{\frac{h}{2}\pm\sqrt{\frac{h^2}{4}-
+	U_0^2\,\PA{1+\frac{h\,t_a}{w}}}}}{U_0^2},&U_0\neq 0,\;h\leq 0
+	\end{array}\right.
+\]
+
+\subsection{Onda cuadrada}
+
+\subsection{Onda triangular}
+
+\subsection{Onda estacionaria}
+
+\chapter{El mallado}
+
+\section{Mallado 1D}
+
+En lo que resta, utilizaremos la notación 
+\PICTURE{300,70}
+{
+	\put(0,30){\line(1,0){50}}
+	\put(80,30){\line(1,0){120}}
+	\put(230,30){\line(1,0){70}}
+	\put(0,30){\qbezier[10](0,-20)(0,0)(0,20)}
+	\put(30,30){\qbezier[10](0,-20)(0,0)(0,20)}
+	\put(50,30){\qbezier[10](0,-20)(0,0)(0,20)}
+	\put(15,30){\circle*{2}}
+	\put(40,30){\circle*{2}}
+	\put(60,30){\circle*{1}}
+	\put(65,30){\circle*{1}}
+	\put(70,30){\circle*{1}}
+	\put(80,30){\qbezier[10](0,-20)(0,0)(0,20)}
+	\put(100,30){\qbezier[10](0,-20)(0,0)(0,20)}
+	\put(160,30){\qbezier[10](0,-20)(0,0)(0,20)}
+	\put(200,30){\qbezier[10](0,-20)(0,0)(0,20)}
+	\put(90,30){\circle*{2}}
+	\put(130,30){\circle*{2}}
+	\put(180,30){\circle*{2}}
+	\put(210,30){\circle*{1}}
+	\put(215,30){\circle*{1}}
+	\put(220,30){\circle*{1}}
+	\put(230,30){\qbezier[10](0,-20)(0,0)(0,20)}
+	\put(270,30){\qbezier[10](0,-20)(0,0)(0,20)}
+	\put(300,30){\qbezier[10](0,-20)(0,0)(0,20)}
+	\put(250,30){\circle*{2}}
+	\put(285,30){\circle*{2}}
+	\put(7,22){$x_1$}
+	\put(33,22){$x_2$}
+	\put(124,22){$x_i$}
+	\put(236,22){$x_{N-1}$}
+	\put(277,22){$x_N$}
+	\put(100,10){\vector(1,0){60}}
+	\put(160,10){\vector(-1,0){60}}
+	\put(123,0){$\IX_i$}
+	\multiput(130,30)(50,0){2}{\qbezier[20](0,0)(0,20)(0,40)}
+	\put(130,70){\vector(1,0){50}}
+	\put(180,70){\vector(-1,0){50}}
+	\put(135,60){$\IX\IR$}
+}{Discretization of the spatial domain with an irregular mesh of $N$ cells.}
+{FigMesh}
+
+
+Dos enfoques diferentes son utilizados en el programa \WAVE para realizar el mallado: el enfoque integral y el enfoque discreto.
+
+En el enfoque integral consideraremos la variable discreta como el promedio en la celda de la variable real:
+\EQ
+{
+	U_i^n=
+	\frac{1}{\IX_i}\int_{x-\frac{\IX_i}{2}}^{x+\frac{\IX_i}{2}}U\PA{x,t^n}\,dx
+}{EqMallaIntegral}
+Este enfoque produce de manera natural métodos conservativos y es el enfoque generalmente utilizado en volúmenes finitos.
+
+En el enfoque discreto se considera la variable discreta igual al valor de la variable en un punto:
+\EQ{U_i^n=U\PA{x_i,t^n}}{EqMallaDiscreta}
+Con este enfoque resulta más complicado construir esquemas conservativos. No obstante, tiene ventajas sobre el enfoque integral puesto que puede, con una adecuada definición de los nodos de la malla, respetar los valores extremos de una función.
+
+\begin{figure}[ht]
+\centering
+(a)
+\begin{picture}(150,60)
+	 \put(0,0){\line(3,2){90}}
+	 \put(90,60){\line(1,-1){60}}
+	 \multiput(15,10)(30,20){3}{\circle*{3}}
+	 \multiput(105,45)(30,-30){2}{\circle*{3}}
+	 \multiput(0,10)(30,20){3}{\qbezier[15](0,0)(15,0)(30,0)}
+	 \multiput(90,45)(30,-30){2}{\qbezier[15](0,0)(15,0)(30,0)}
+	 \put(0,0){\qbezier[5](0,0)(0,5)(0,10)}
+	 \put(30,0){\qbezier[15](0,0)(0,15)(0,30)}
+	 \put(60,0){\qbezier[25](0,0)(0,25)(0,50)}
+	 \put(90,0){\qbezier[25](0,0)(0,25)(0,50)}
+	 \put(120,0){\qbezier[23](0,0)(0,22.5)(0,45)}
+	 \put(150,0){\qbezier[8](0,0)(0,7.5)(0,15)}
+\end{picture}
+$\quad$(b)
+\begin{picture}(150,60)
+	 \put(0,0){\line(3,2){90}}
+	 \put(90,60){\line(1,-1){60}}
+	 \put(15,0){\circle*{3}}
+	 \put(45,30){\circle*{3}}
+	 \put(75,60){\circle*{3}}
+	 \put(105,45){\circle*{3}}
+	 \put(135,0){\circle*{3}}
+	 \put(0,0){\qbezier[15](0,0)(15,0)(30,0)}
+	 \put(30,30){\qbezier[15](0,0)(15,0)(30,0)}
+	 \put(60,60){\qbezier[15](0,0)(15,0)(30,0)}
+	 \put(90,45){\qbezier[15](0,0)(15,0)(30,0)}
+	 \put(120,0){\qbezier[15](0,0)(15,0)(30,0)}
+	 \put(30,0){\qbezier[15](0,0)(0,15)(0,30)}
+	 \put(60,0){\qbezier[30](0,0)(0,30)(0,60)}
+	 \put(90,0){\qbezier[30](0,0)(0,30)(0,60)}
+	 \put(120,0){\qbezier[23](0,0)(0,22.5)(0,45)}
+\end{picture}
+\\(c)
+\begin{picture}(150,60)
+	 \put(0,0){\line(3,2){90}}
+	 \put(90,60){\line(1,-1){60}}
+	 \multiput(0,0)(30,20){4}{\circle*{3}}
+	 \multiput(110,40)(20,-20){3}{\circle*{3}}
+	 \put(0,0){\qbezier[8](0,0)(7.5,0)(15,0)}
+	 \multiput(15,20)(30,20){2}{\qbezier[15](0,0)(15,0)(30,0)}
+	 \put(75,60){\qbezier[13](0,0)(12.5,0)(25,0)}
+	 \multiput(100,40)(20,-20){2}{\qbezier[10](0,0)(10,0)(20,0)}
+	 \put(140,0){\qbezier[5](0,0)(5,0)(10,0)}
+	 \put(15,0){\qbezier[10](0,0)(0,10)(0,20)}
+	 \put(45,0){\qbezier[20](0,0)(0,20)(0,40)}
+	 \put(75,0){\qbezier[30](0,0)(0,30)(0,60)}
+	 \put(100,0){\qbezier[30](0,0)(0,30)(0,60)}
+	 \put(120,0){\qbezier[20](0,0)(0,20)(0,40)}
+	 \put(140,0){\qbezier[10](0,0)(0,10)(0,20)}
+\end{picture}
+\caption{Discrete representations of a geometrical shape with two segments. (a)
+Fully uniform grid with nodal value equal to the function at the node position.
+(b) Idem except at the grid cells nearest to extrema. (c) Uniform grid per
+segment.}\label{FigDiagram}
+\end{figure}
+
+\end{document}
+

@@ -3,7 +3,7 @@ WAVE: a software to calculate numerical propagation of waves.
 
 AUTHORS: Javier Burguete Tolosa.
 
-Copyright 2010-2013, AUTHORS.
+Copyright 2010-2014, AUTHORS.
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -31,7 +31,7 @@ OF SUCH DAMAGE.
  * \file shape1d.h
  * \brief Header file to define an 1D wave shape.
  * \author Javier Burguete Tolosa.
- * \copyright Copyright 2010-2013.
+ * \copyright Copyright 2010-2014.
 */
 #ifndef SHAPE1D__H
 #define SHAPE1D__H 1
@@ -39,14 +39,28 @@ OF SUCH DAMAGE.
 /**
  * \enum Shape1DType
  * \brief Types of 1D wave shape.
+ * \var SHAPE_1D_TYPE_NONE
+ * \brief not mesh shape.
+ * \var SHAPE_1D_TYPE_SQUARE
+ * \brief square mesh shape.
+ * \var SHAPE_1D_TYPE_TRIANGULAR
+ * \brief triangular mesh shape.
+ * \var SHAPE_1D_TYPE_GAUSSIAN
+ * \brief gaussian mesh shape.
+ * \var SHAPE_1D_TYPE_SINUSOIDAL
+ * \brief sinusoidal mesh shape.
+ * \var SHAPE_1D_TYPE_SINUSOIDAL_2
+ * \brief sinusoidal square mesh shape.
  */
 enum Shape1DType
 {
-	SHAPE_1D_TYPE_SQUARE=0,
-	SHAPE_1D_TYPE_TRIANGULAR=1,
-	SHAPE_1D_TYPE_SINUSOIDAL=2,
-	SHAPE_1D_TYPE_GAUSSIAN=3,
-	SHAPE_1D_TYPE_STEADY=4
+	SHAPE_1D_TYPE_NONE = 0,
+	SHAPE_1D_TYPE_SQUARE = 1,
+	SHAPE_1D_TYPE_TRIANGULAR = 2,
+	SHAPE_1D_TYPE_GAUSSIAN = 3,
+	SHAPE_1D_TYPE_SINUSOIDAL = 4,
+	SHAPE_1D_TYPE_SINUSOIDAL_2 = 5,
+	SHAPE_1D_TYPE_PARTICULAR = 4
 };
 
 /**
@@ -68,7 +82,7 @@ typedef struct
  * \brief type of shape.
  */
 	JBDOUBLE x0, w, u0, h;
-	int type;
+	unsigned int type;
 } Shape1D;
 
 int shape_1d_open_xml(Shape1D *shape, xmlNode *node);
