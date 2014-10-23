@@ -560,11 +560,11 @@ donde en el instante inicial $x_0$ es el centro de la onda, $w$ su anchura, $U_0
 
 \subsection{Onda estacionaria}
 
-\chapter{El mallado}
+\chapter{La discretización}
 
 \section{Mallado 1D}
 
-En lo que resta, utilizaremos la notación 
+En lo que resta, utilizaremos la notación de la figura~\ref{FigMesh}: $\delta x_i$ representa la anchura de la celda $i$-ésima y $\delta x_{i+\frac12}=x_{i+1}-x_i$ la distancia entre los nodos $i$ e $i+1$-ésimos.
 \PICTURE{300,70}
 {
 	\put(0,30){\line(1,0){50}}
@@ -608,20 +608,30 @@ En lo que resta, utilizaremos la notación
 }{Discretization of the spatial domain with an irregular mesh of $N$ cells.}
 {FigMesh}
 
+Dos enfoques diferentes son utilizados en el programa \WAVE para realizar la discretización: los volúmenes finitos y las diferencias finitas.
 
-Dos enfoques diferentes son utilizados en el programa \WAVE para realizar el mallado: el enfoque integral y el enfoque discreto.
+\section{Volúmenes finitos}
 
-En el enfoque integral consideraremos la variable discreta como el promedio en la celda de la variable real:
+En diferencias finitas consideraremos la variable discreta como el promedio en la celda de la variable real:
 \EQ
 {
 	U_i^n=
 	\frac{1}{\IX_i}\int_{x-\frac{\IX_i}{2}}^{x+\frac{\IX_i}{2}}U\PA{x,t^n}\,dx
 }{EqMallaIntegral}
-Este enfoque produce de manera natural métodos conservativos y es el enfoque generalmente utilizado en volúmenes finitos.
+Además el esquema numérico que resuelve ecuaciones del tipo
+(\ref{EqOndasIntegral}) sigue la estructura:
+\EQ
+{
+	\PA{U_i^{n+1}-U_i^n}\,\delta x_i
+	=\PA{F_{i-\frac12}^*-F_{i+\frac12}^*}\,\Delta t^n
+}{EqVolumenesFinitos}
+con $F^*$ el flujo numérico asociado a cada esquema particular. Este enfoque produce de manera natural métodos conservativos puesto que la ecuación de conservación se aproxima de manera consistente siempre que el flujo numérico sea una aproximación al flujo físico.
 
-En el enfoque discreto se considera la variable discreta igual al valor de la variable en un punto:
+\section{Diferencias finitas}
+
+En diferencias finitas se considera la variable discreta igual al valor de la variable en un punto:
 \EQ{U_i^n=U\PA{x_i,t^n}}{EqMallaDiscreta}
-Con este enfoque resulta más complicado construir esquemas conservativos. No obstante, tiene ventajas sobre el enfoque integral puesto que puede, con una adecuada definición de los nodos de la malla, respetar los valores extremos de una función.
+Con este enfoque resulta más complicado construir esquemas conservativos. No obstante, también tiene alguna ventaja potencial sobre los volúmenes finitos puesto que puede, con una adecuada definición de los nodos de la malla, respetar los valores extremos de una función (véase la figura~\ref{FigDiagram}).
 
 \begin{figure}[ht]
 \centering
@@ -682,6 +692,17 @@ Fully uniform grid with nodal value equal to the function at the node position.
 (b) Idem except at the grid cells nearest to extrema. (c) Uniform grid per
 segment.}\label{FigDiagram}
 \end{figure}
+
+\chapter{Esquemas numéricos conservativos en volúmenes finitos}
+
+\section{Esquema de Lax-Friedrichs}
+
+\EQ{F_{i+\frac12}^*=\frac{F_i^n+F_{i+1}^n+\nu\,\PA{U_i^n-U_{i+1}^n}}2}
+{EqLaxFriedrichsVF}
+
+\section{Esquema de Lax-Wendroff}
+
+\chapter{Esquemas numéricos conservativos en diferencias finitas}
 
 \end{document}
 
