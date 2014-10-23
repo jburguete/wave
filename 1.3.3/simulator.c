@@ -11,13 +11,27 @@ extern void draw_graphic();
 
 void DialogHelpCreate()
 {
-	jbw_show_message(gettext("Help"),
-		gettext("wave v. 1.3.2 english\n"
-			"Unsteady propagation wave program\n"
-			"Author: Javier Burguete\n"
-			"E-mail: jburguete@eead.csic.es\n"
-			"Phone: (+034) 976491996"),
-		GTK_MESSAGE_INFO);
+	gchar *authors[] =
+	{
+		"Javier Burguete Tolosa (jburguete@eead.csic.es)",
+		NULL
+	};
+	gtk_show_about_dialog(dialog_simulator.window,
+		"program_name",
+		"Wave",
+		"authors",
+		authors,
+		"version",
+		"1.3.3",
+		"copyright",
+		"Copyright 2009-2014 Javier Burguete Tolosa",
+//		"logo",
+//		dialog_simulator.logo,
+		"website-label",
+		gettext("Website"),
+		"website",
+		"https://github.com/jburguete/wave",
+		NULL);
 }
 
 void DialogSimulatorClose()

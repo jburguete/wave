@@ -21,7 +21,6 @@ typedef struct
 	GtkMenu *menu_items;
 	GtkMenuBar *menu_bar;
 	GtkBox *box_bar, *box;
-	GtkTable *table;
 	GtkToolbar *toolbar;
 	GtkWindow *window;
 } DialogSimulator;
