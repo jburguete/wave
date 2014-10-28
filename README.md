@@ -37,11 +37,11 @@ FILES
 BUILDING INSTRUCTIONS
 ---------------------
 
-Debian Linux 7.6
+Debian Linux 7.7
 ________________
-Debian kFreeBSD 7.6
+Debian kFreeBSD 7.7
 ___________________
-Debian Hurd 7.6
+Debian Hurd 7.7
 _______________
 FreeBSD 10.0
 ___________
