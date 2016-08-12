@@ -45,7 +45,7 @@ Debian Hurd 7.7
 _______________
 FreeBSD 10.0
 ___________
-NetBSD 6.1.5 (with modular xorg)
+NetBSD 7.0 (with modular xorg)
 ____________
 
 * download the latest [JB library](https://github.com/jburguete/jb)
