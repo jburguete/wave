@@ -9,4 +9,4 @@
 #define DEBUG_STEP2 0
 #define DEBUG_SIMULATE 0
 
-#define INLINE_LEVEL 0xffff
+#define DEBUG_LEVEL 0x0000

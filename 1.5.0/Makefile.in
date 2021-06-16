@@ -14,15 +14,17 @@ objs = jb_def.o jb_math.o jb_win.o wave.o scheme.o draw.o \
 	dialog_wave.o dialog_scheme.o dialog_options.o simulator.o main.o
 src = jb/jb_def.c jb/jb_math.c jb/jb_win.c wave.c scheme.c draw.c \
 	dialog_wave.c dialog_scheme.c dialog_options.c simulator.c main.c
-flags = -c -Wall -DJBW=2 -DJBW_DRAW=2 -DJBW_GRAPHIC=2 @CPPFLAGS@ @GLIB_CFLAGS@ \
-	@PNG_CFLAGS@ @GTK_CFLAGS@
+flags = -c -Wall -DJBM_PRECISION=5 -DJBW=2 @CPPFLAGS@ @GLIB_CFLAGS@ \
+	@GTOP_CFLAGS@ @PNG_CFLAGS@ @FREETYPE_CFLAGS@ @GTK_CFLAGS@ \
+	@GLEW_CFLAGS@ @VULKAN_CFLAGS@ @SDL_CFLAGS@ @GLFW_CFLAGS@ @FONT@ \
+	@GRAPHIC@
 flags_fast = $(flags) -O3
 flags_small = $(flags) -Os
 name = $(bindir)wave
 
 objs_bin = jb_def.o jb_math.o jb_win_bin.o wave.o scheme_bin.o main_bin.o
 src_bin = jb/jb_def.c jb/jb_math.c jb/jb_win.c wave.c scheme.c main.c
-flags_bin = -c -Wall -DJBW=1 @CPPFLAGS@ @GLIB_CFLAGS@
+flags_bin = -c -Wall -DJBM_PRECISION=5 -DJBW=1 @CPPFLAGS@ @GLIB_CFLAGS@
 flags_fast_bin = $(flags_bin) -O3
 flags_small_bin = $(flags_bin) -Os
 name_bin = $(bindir)wavebin
@@ -30,7 +32,9 @@ name_bin = $(bindir)wavebin
 all: $(name) $(name_bin) $(localdir)$(es)wave.mo $(localdir)$(fr)wave.mo
 
 $(name): $(objs)
-	$(CC) $(objs) -o $(name) @LDFLAGS@ @LIBS@ @GLIB_LIBS@ @PNG_LIBS@ @GTK_LIBS@
+	$(CC) $(objs) -o $(name) @LDFLAGS@ @LIBS@ @GLIB_LIBS@ @GTOP_LIBS@ \
+		@PNG_LIBS@ @FREETYPE_LIBS@ @GTK_LIBS@ @GLEW_LIBS@ \
+		@VULKAN_LIBS@ @SDL_LIBS@ @GLFW_LIBS@
 
 $(name_bin): $(objs_bin)
 	$(CC) $(objs_bin) -o $(name_bin) @LDFLAGS@ -lm @GLIB_LIBS@
@@ -38,7 +42,7 @@ $(name_bin): $(objs_bin)
 jb_def.o: jb/jb_def.c jb/jb_def.h $(configs)
 	$(CC) jb/jb_def.c -o jb_def.o $(flags_small)
 
-jb_math.o: jb/jb_math.c jb/jb_math.h jb_def.o $
+jb_math.o: jb/jb_math.c jb/jb_math.h jb_def.o
 	$(CC) jb/jb_math.c -o jb_math.o $(flags_fast)
 
 jb_win.o: jb/jb_win.c jb/jb_win.h jb_math.o
@@ -79,7 +83,7 @@ main_bin.o: main.c scheme_bin.o
 	$(CC) main.c -o main_bin.o $(flags_small_bin)
 
 po/wave.pot: Makefile $(src)
-	xgettext -d wave -o po/wave.pot --from-code=UTF-8 $(src)
+	xgettext -k_ -d wave -o po/wave.pot --from-code=UTF-8 $(src)
 #	msginit -l es -o po/$(es)wave.po -i po/wave.pot --no-translator
 #	msginit -l fr -o po/$(fr)wave.po -i po/wave.pot --no-translator
 	msgmerge -U po/$(es)wave.po po/wave.pot

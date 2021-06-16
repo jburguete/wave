@@ -37,16 +37,12 @@ FILES
 BUILDING INSTRUCTIONS
 ---------------------
 
-Debian Linux 7.7
-________________
-Debian kFreeBSD 7.7
-___________________
-Debian Hurd 7.7
-_______________
-FreeBSD 10.0
-___________
-NetBSD 7.0 (with modular xorg)
+Debian 10 (Linux)
+_________________
+FreeBSD 13.0
 ____________
+NetBSD 9.1
+__________
 
 * download the latest [JB library](https://github.com/jburguete/jb)
 * cd version (i.e. cd 1.3.2)
@@ -58,27 +54,7 @@ ____________
 * make
 * strip wave (optional: to make a final version)
 
-Microsoft Windows 7 32 bits
-___________________________
-Microsoft Windows XP 32 bits
-____________________________
-
-* install [MSYS/MinGW](http://www.mingw.org) and the required libraries and
-utilities. You can follow detailed instructions in
-[MinGW-64-Make](https://github.com/jburguete/MinGW-64-Make)
-* download the latest [JB library](https://github.com/jburguete/jb)
-* cd version (i.e. cd 1.3.2)
-* link the latest JB library to jb (i.e. ln -s PATH_TO_THE_JB_LIBRARY/1.6.0 jb)
-* aclocal
-* autoconf
-* automake --add-missing
-* configure
-* make
-* strip wave (optional: to make a final version)
-
-Microsoft Windows 7 64 bits
-___________________________
-Microsoft Windows XP 64 bits
+Microsoft Windows 10 64 bits
 ____________________________
 
 * install [MSYS/MinGW](http://www.mingw.org) and the required libraries and
@@ -94,13 +70,13 @@ utilities. You can follow detailed instructions in
 * make
 * strip wave (optional: to make a final version)
 
-OpenBSD 5.5
+OpenBSD 6.9
 ___________
 
 * download the latest [JB library](https://github.com/jburguete/jb)
 * cd version (i.e. cd 1.3.2)
 * link the latest JB library to jb (i.e. ln -s PATH_TO_THE_JB_LIBRARY/1.6.0 jb)
-* export AUTOMAKE_VERSION=1.13 AUTOCONF_VERSION=2.69
+* export AUTOMAKE_VERSION=1.16 AUTOCONF_VERSION=2.69
 * aclocal
 * autoconf
 * automake --add-missing
