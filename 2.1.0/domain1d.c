@@ -3,17 +3,17 @@ WAVE: a software to calculate numerical propagation of waves.
 
 AUTHORS: Javier Burguete Tolosa.
 
-Copyright 2010-2014, AUTHORS.
+Copyright 2010-2021, AUTHORS.
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
 
-	1. Redistributions of source code must retain the above copyright notice,
-		this list of conditions and the following disclaimer.
+  1. Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
 
-	2. Redistributions in binary form must reproduce the above copyright notice,
-		this list of conditions and the following disclaimer in the
-		documentation and/or other materials provided with the distribution.
+  2. Redistributions in binary form must reproduce the above copyright notice,
+    this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
 
 THIS SOFTWARE IS PROVIDED BY AUTHORS ``AS IS'' AND ANY EXPRESS OR IMPLIED
 WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
@@ -31,67 +31,63 @@ OF SUCH DAMAGE.
  * \file domain1d.c
  * \brief Source file to define an 1D domain.
  * \author Javier Burguete Tolosa.
- * \copyright Copyright 2010-2014.
+ * \copyright Copyright 2010-2021.
 */
-#include "def.h"
+#include "config.h"
 #include "jb/jb_xml.h"
+#include "tools.h"
 #include "domain1d.h"
 
 /**
- * \fn void domain_1d_message(char *text)
- * \brief Function to make a message in the 1D domain context.
- * \param text
- * \brief message string.
+ * function to make an error message in the 1D domain context.
 */
-void domain_1d_message(char *text)
+static inline void
+domain_1d_error (char *text)  ///< message string.
 {
-	message = g_strconcat("Domain1D:\n", gettext(text), NULL);
+  error_message ("Domain1D", text);
 }
 
 /**
- * \fn int domain_1d_open_xml(Domain1D *domain, xmlNode *node)
- * \brief Function to read an 1D domain of a XML node.
- * \param domain
- * \brief 1D domain struct.
- * \param node
- * \brief XML node.
+ * function to read an 1D domain of a XML node.
+ *
  * \return 0 on error, 1 on success.
 */
-int domain_1d_open_xml(Domain1D *domain, xmlNode *node)
+int
+domain_1d_open_xml (Domain1D * domain,  ///< Domain1D struct.
+	       	    xmlNode * node)     ///< XML node.
 {
-	int err1, err2;
-	char *err_msg;
+  const char *err_msg;
+  int err1, err2;
 
-#if DEBUG_DOMAIN_1D_OPEN_XML
-	fprintf(stderr,"domain_1d_open_xml: start\n");
+#if DEBUG_DOMAIN_1D
+  fprintf (stderr, "domain_1d_open_xml: start\n");
 #endif
 
-	// Checking the name of the XML node
-	if (xmlStrcmp(node->name, XML_DOMAIN))
-	{
-		err_msg = "Bad XML";
-		goto error1;
-	}
+  // Checking the name of the XML node
+  if (xmlStrcmp (node->name, XML_DOMAIN))
+    {
+      err_msg = _("Bad XML");
+      goto error1;
+    }
 
-	// Reading the propierties of the domain
-	domain->xmax = jb_xml_node_get_float(node, XML_XMAX, &err1);
-	domain->tmax = jb_xml_node_get_float(node, XML_TMAX, &err2);
-	if (err1 != 1 || err2 != 1 || domain->xmax <= 0. || domain->tmax <= 0.)
-	{
-		err_msg = "Bad defined";
-		goto error1;
-	}
-#if DEBUG_DOMAIN_1D_OPEN_XML
-	fprintf(stderr,"domain_1d_open_xml: end\n");
+  // Reading the propierties of the domain
+  domain->xmax = jb_xml_node_get_float (node, XML_XMAX, &err1);
+  domain->tmax = jb_xml_node_get_float (node, XML_TMAX, &err2);
+  if (err1 != 1 || err2 != 1 || domain->xmax <= 0. || domain->tmax <= 0.)
+    {
+      err_msg = _("Bad defined");
+      goto error1;
+    }
+#if DEBUG_DOMAIN_1D
+  fprintf (stderr, "domain_1d_open_xml: end\n");
 #endif
-	return 1;
+  return 1;
 
 error1:
-	// Making the error message
-	domain_1d_message(err_msg);
-#if DEBUG_DOMAIN_1D_OPEN_XML
-	fprintf(stderr,"domain_1d_open_xml: end\n");
+  // Making the error message
+  domain_1d_error ((char *) err_msg);
+#if DEBUG_DOMAIN_1D
+  fprintf (stderr, "domain_1d_open_xml: end\n");
 #endif
-	return 0;
+  return 0;
 }
-

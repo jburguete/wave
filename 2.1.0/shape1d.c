@@ -3,17 +3,17 @@ WAVE: a software to calculate numerical propagation of waves.
 
 AUTHORS: Javier Burguete Tolosa.
 
-Copyright 2010-2014, AUTHORS.
+Copyright 2010-2021, AUTHORS.
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
 
-	1. Redistributions of source code must retain the above copyright notice,
-		this list of conditions and the following disclaimer.
+  1. Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
 
-	2. Redistributions in binary form must reproduce the above copyright notice,
-		this list of conditions and the following disclaimer in the
-		documentation and/or other materials provided with the distribution.
+  2. Redistributions in binary form must reproduce the above copyright notice,
+    this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
 
 THIS SOFTWARE IS PROVIDED BY AUTHORS ``AS IS'' AND ANY EXPRESS OR IMPLIED
 WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
@@ -31,99 +31,97 @@ OF SUCH DAMAGE.
  * \file shape1d.c
  * \brief Source file to define an 1D wave shape.
  * \author Javier Burguete Tolosa.
- * \copyright Copyright 2010-2014.
+ * \copyright Copyright 2010-2021.
  */
-#include "def.h"
+#include "config.h"
 #include "jb/jb_xml.h"
+#include "tools.h"
 #include "shape1d.h"
 
 /**
- * \fn void shape_1d_message(char *text)
- * \brief Function to make a message in the 1D shape context.
- * \param text
- * \brief message string.
+ * function to make an error message in the 1D shape context.
  */
-void shape_1d_message(char *text)
+static inline void
+shape_1d_error (char *text)     ///< message string.
 {
-	message = g_strconcat("Shape1D:\n", gettext(text), NULL);
+  error_message ("Shape1D", text);
 }
 
 /**
- * \fn int shape_1d_open_xml(Shape1D *shape, xmlNode *node)
- * \brief Function to read an 1D shape of a XML node.
- * \param shape
- * \brief 1D shape struct.
- * \param node
- * \brief XML node.
+ * function to read an 1D shape of a XML node.
+ *
  * \return 0 on error, 1 on success.
  */
-int shape_1d_open_xml(Shape1D *shape, xmlNode *node)
+int
+shape_1d_open_xml (Shape1D * shape,     ///< Shape1D struct.
+                   xmlNode * node)      ///< XML node.
 {
-	int err1, err2, err3, err4;
-	char *buffer;
+  xmlChar *buffer;
+  const char *msg;
+  int err1, err2, err3, err4;
 
-#if DEBUG_SHAPE_1D_OPEN_XML
-	fprintf(stderr,"shape_1d_open_xml: start\n");
+#if DEBUG_SHAPE_1D
+  fprintf (stderr, "shape_1d_open_xml: start\n");
 #endif
 
-	// Checking the name of the XML node
-	if (xmlStrcmp(node->name, XML_SHAPE))
-	{
-		buffer = "Bad XML";
-		goto error1;
-	}
+  // Checking the name of the XML node
+  if (xmlStrcmp (node->name, XML_SHAPE))
+    {
+      msg = _("Bad XML");
+      goto error1;
+    }
 
-	// Reading the type of shape
-	if (!xmlHasProp(node, XML_TYPE))
-	{
-		buffer = "Not type";
-		goto error1;
-	}
-	buffer = xmlGetProp(node, XML_TYPE);
-	if (!buffer)
-	{
-		buffer = "Unable to open the type";
-		goto error1;
-	}
-	if (!xmlStrcmp(buffer, XML_SQUARE)) shape->type = SHAPE_1D_TYPE_SQUARE;
-	else if (!xmlStrcmp(buffer, XML_TRIANGULAR))
-		shape->type = SHAPE_1D_TYPE_TRIANGULAR;
-	else if (!xmlStrcmp(buffer, XML_SINUSOIDAL))
-		shape->type = SHAPE_1D_TYPE_SINUSOIDAL;
-	else if (!xmlStrcmp(buffer, XML_GAUSSIAN))
-		shape->type = SHAPE_1D_TYPE_GAUSSIAN;
-	else if (!xmlStrcmp(buffer, XML_STEADY))
-		shape->type = SHAPE_1D_TYPE_STEADY;
-	else
-	{
-		xmlFree(buffer);
-		buffer = "Unknown type";
-		goto error1;
-	}
-	xmlFree(buffer);
+  // Reading the type of shape
+  if (!xmlHasProp (node, XML_TYPE))
+    {
+      msg = _("Not type");
+      goto error1;
+    }
+  buffer = xmlGetProp (node, XML_TYPE);
+  if (!buffer)
+    {
+      msg = _("Unable to open the type");
+      goto error1;
+    }
+  if (!xmlStrcmp (buffer, XML_SQUARE))
+    shape->type = SHAPE_1D_TYPE_SQUARE;
+  else if (!xmlStrcmp (buffer, XML_TRIANGULAR))
+    shape->type = SHAPE_1D_TYPE_TRIANGULAR;
+  else if (!xmlStrcmp (buffer, XML_SINUSOIDAL))
+    shape->type = SHAPE_1D_TYPE_SINUSOIDAL;
+  else if (!xmlStrcmp (buffer, XML_GAUSSIAN))
+    shape->type = SHAPE_1D_TYPE_GAUSSIAN;
+  else if (!xmlStrcmp (buffer, XML_STEADY))
+    shape->type = SHAPE_1D_TYPE_STEADY;
+  else
+    {
+      xmlFree (buffer);
+      msg = _("Unknown type");
+      goto error1;
+    }
+  xmlFree (buffer);
 
-	// Reading the propierties of the shape
-	shape->x0 = jb_xml_node_get_float(node, XML_X0, &err1);
-	shape->w = jb_xml_node_get_float(node, XML_W, &err2);
-	shape->u0 = jb_xml_node_get_float(node, XML_U0, &err3);
-	shape->h = jb_xml_node_get_float(node, XML_H, &err4);
-	if (err1 != 1 || err2 != 1 || err3 != 1 || err4 != 1)
-	{
-		buffer = "Bad parameters";
-		goto error1;
-	}
+  // Reading the propierties of the shape
+  shape->x0 = jb_xml_node_get_float (node, XML_X0, &err1);
+  shape->w = jb_xml_node_get_float (node, XML_W, &err2);
+  shape->u0 = jb_xml_node_get_float (node, XML_U0, &err3);
+  shape->h = jb_xml_node_get_float (node, XML_H, &err4);
+  if (err1 != 1 || err2 != 1 || err3 != 1 || err4 != 1)
+    {
+      msg = _("Bad parameters");
+      goto error1;
+    }
 
-#if DEBUG_SHAPE_1D_OPEN_XML
-	fprintf(stderr,"shape_1d_open_xml: end\n");
+#if DEBUG_SHAPE_1D
+  fprintf (stderr, "shape_1d_open_xml: end\n");
 #endif
-	return 1;
+  return 1;
 
 error1:
-	// Making the error message
-	shape_1d_message(buffer);
-#if DEBUG_SHAPE_1D_OPEN_XML
-	fprintf(stderr,"shape_1d_open_xml: end\n");
+  // Making the error message
+  shape_1d_error ((char *) msg);
+#if DEBUG_SHAPE_1D
+  fprintf (stderr, "shape_1d_open_xml: end\n");
 #endif
-	return 0;
+  return 0;
 }
-

@@ -3,17 +3,17 @@ WAVE: a software to calculate numerical propagation of waves.
 
 AUTHORS: Javier Burguete Tolosa.
 
-Copyright 2010-2014, AUTHORS.
+Copyright 2010-2021, AUTHORS.
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
 
-	1. Redistributions of source code must retain the above copyright notice,
-		this list of conditions and the following disclaimer.
+  1. Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
 
-	2. Redistributions in binary form must reproduce the above copyright notice,
-		this list of conditions and the following disclaimer in the
-		documentation and/or other materials provided with the distribution.
+  2. Redistributions in binary form must reproduce the above copyright notice,
+    this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
 
 THIS SOFTWARE IS PROVIDED BY AUTHORS ``AS IS'' AND ANY EXPRESS OR IMPLIED
 WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
@@ -31,29 +31,21 @@ OF SUCH DAMAGE.
  * \file domain1d.h
  * \brief Header file to define an 1D domain.
  * \author Javier Burguete Tolosa.
- * \copyright Copyright 2010-2014.
+ * \copyright Copyright 2010-2021.
  */
 #ifndef DOMAIN1D__H
 #define DOMAIN1D__H 1
 
 /**
  * \struct Domain1D
- * \brief Struct to define an 1D domain.
+ * \brief struct to define an 1D domain.
 */
-
 typedef struct
 {
-/**
- * \var xmax
- * \brief maximum x-limit of the domain.
- * \var tmax
- * \brief maximum t-limit of the domain.
- */
-	JBDOUBLE xmax, tmax;
+  JBDOUBLE xmax;                ///< maximum x-limit of the domain.
+  JBDOUBLE tmax;                ///< maximum t-limit of the domain.
 } Domain1D;
 
-void domain_1d_message(char *text);
-int domain_1d_open_xml(Domain1D *domain, xmlNode *node);
+int domain_1d_open_xml (Domain1D * domain, xmlNode * node);
 
 #endif
-

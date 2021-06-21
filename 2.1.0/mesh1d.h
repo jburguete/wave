@@ -8,12 +8,12 @@ Copyright 2010-2014, AUTHORS.
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
 
-	1. Redistributions of source code must retain the above copyright notice,
-		this list of conditions and the following disclaimer.
-
-	2. Redistributions in binary form must reproduce the above copyright notice,
-		this list of conditions and the following disclaimer in the
-		documentation and/or other materials provided with the distribution.
+  1. Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
+ 
+  2. Redistributions in binary form must reproduce the above copyright notice,
+    this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
 
 THIS SOFTWARE IS PROVIDED BY AUTHORS ``AS IS'' AND ANY EXPRESS OR IMPLIED
 WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
@@ -38,11 +38,11 @@ OF SUCH DAMAGE.
 
 typedef struct
 {
-	Wave1D wave[1];
-	Cell1D *cell;
-	Wall1D *wall;
-	JBDOUBLE dx_max, initial_mass, final_mass, inlet_mass, outlet_mass;
-	int type, focus, n_cells, n_walls;
+  Wave1D wave[1];
+  Cell1D *cell;
+  Wall1D *wall;
+  JBDOUBLE dx_max, initial_mass, final_mass, inlet_mass, outlet_mass;
+  int type, focus, n_cells, n_walls;
 } Mesh1D;
 
 #define MESH_1D(mesh) ((Mesh1D*)mesh)

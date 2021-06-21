@@ -3,17 +3,17 @@ WAVE: a software to calculate numerical propagation of waves.
 
 AUTHORS: Javier Burguete Tolosa.
 
-Copyright 2010-2014, AUTHORS.
+Copyright 2010-2021, AUTHORS.
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
 
-	1. Redistributions of source code must retain the above copyright notice,
-		this list of conditions and the following disclaimer.
+  1. Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
 
-	2. Redistributions in binary form must reproduce the above copyright notice,
-		this list of conditions and the following disclaimer in the
-		documentation and/or other materials provided with the distribution.
+  2. Redistributions in binary form must reproduce the above copyright notice,
+    this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
 
 THIS SOFTWARE IS PROVIDED BY AUTHORS ``AS IS'' AND ANY EXPRESS OR IMPLIED
 WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
@@ -31,81 +31,81 @@ OF SUCH DAMAGE.
  * \file config.h
  * \brief Configuration header file.
  * \author Javier Burguete Tolosa.
- * \copyright Copyright 2010-2014.
+ * \copyright Copyright 2010-2021.
  */
 #ifndef CONFIG__H
 #define CONFIG__H 1
 
-/**
- * \def MAX_DIMENSIONS
- * \brief Number of maximum dimensions.
- */
-#define MAX_DIMENSIONS 1
-
-/**
- * \def MESH_RANDOM_SEED
- * \brief Seed of the pseudo-random numbers generator.
- */
+#define MAX_DIMENSIONS 1        ///< maximum number of dimensions.
 #define MESH_RANDOM_SEED 7
+///< seed of the pseudo-random numbers generator.
+
+// debug macros
+
+#define DEBUG_CELL_1D 1
+///< macro to debug the cell_1d functions.
+#define DEBUG_DOMAIN_1D 1
+///< macro to debug the domain_1d_functions.
+#define DEBUG_MESH_1D 1
+///< macro to debug the mesh_1d functions.
+#define DEBUG_SHAPE_1D 1
+///< macro to debug the shape_1d functions.
+#define DEBUG_WAVE_1D 1
+///< macro to debug the wape_1d functions.
 
 // XML labels
 
-#define XML_APPROACH	(const xmlChar*)"approach"
-#define XML_DIMENSIONS	(const xmlChar*)"dimensions"
-#define XML_DISCRETE	(const xmlChar*)"discrete"
-#define XML_DOMAIN		(const xmlChar*)"domain"
-#define XML_DX			(const xmlChar*)"dx"
-#define XML_GAUSSIAN	(const xmlChar*)"gaussian"
-#define XML_H			(const xmlChar*)"h"
-#define XML_INTEGRAL	(const xmlChar*)"integral"
-#define XML_LINEAR		(const xmlChar*)"linear"
-#define XML_MESH		(const xmlChar*)"mesh"
-#define XML_REGULAR		(const xmlChar*)"regular"
-#define XML_RANDOM		(const xmlChar*)"random"
-#define XML_SHAPE		(const xmlChar*)"shape"
-#define XML_SINUSOIDAL	(const xmlChar*)"sinusoidal"
-#define XML_SQUARE		(const xmlChar*)"square"
-#define XML_XMAX		(const xmlChar*)"xmax"
-#define XML_STEADY		(const xmlChar*)"steady"
-#define XML_TMAX		(const xmlChar*)"tmax"
-#define XML_TRIANGULAR	(const xmlChar*)"triangular"
-#define XML_TYPE		(const xmlChar*)"type"
-#define XML_U0			(const xmlChar*)"u0"
-#define XML_VARIATION	(const xmlChar*)"variation"
-#define XML_W			(const xmlChar*)"w"
-#define XML_WAVE		(const xmlChar*)"wave"
-#define XML_X0			(const xmlChar*)"x0"
-#define XML_X1			(const xmlChar*)"x1"
-#define XML_XMAX		(const xmlChar*)"xmax"
-
-/**
- * \def DEBUG_DOMAIN_1D_OPEN_XML
- * \brief Macro to debug the domain_1d_open_xml function.
- */
-#define DEBUG_DOMAIN_1D_OPEN_XML 1
-
-/**
- * \def DEBUG_SHAPE_1D_OPEN_XML
- * \brief Macro to debug the shape_1d_open_xml function.
- */
-#define DEBUG_SHAPE_1D_OPEN_XML 1
-
-/**
- * \def DEBUG_MESH_1D_WRITE
- * \brief Macro to debug the mesh_1d_write function.
- */
-#define DEBUG_MESH_1D_WRITE 1
-
-/**
- * \def DEBUG_MESH_1D_CREATE
- * \brief Macro to debug the mesh_1d_create function.
- */
-#define DEBUG_MESH_1D_CREATE 1
-
-/**
- * \def DEBUG_MESH_1D_OPEN_XML
- * \brief Macro to debug the mesh_1d_open_xml function.
- */
-#define DEBUG_MESH_1D_OPEN_XML 1
+#define XML_APPROACH            (const xmlChar*)"approach"
+///< approach XML label.
+#define XML_DIMENSIONS          (const xmlChar*)"dimensions"
+///< dimensions XML label.
+#define XML_DISCRETE            (const xmlChar*)"discrete"
+///< discrete XML label.
+#define XML_DOMAIN              (const xmlChar*)"domain"
+///< domain XML label.
+#define XML_DX                  (const xmlChar*)"dx"
+///< dx XML label.
+#define XML_GAUSSIAN            (const xmlChar*)"gaussian"
+///< gaussian XML label.
+#define XML_H                   (const xmlChar*)"h"
+///< h XML label.
+#define XML_INTEGRAL            (const xmlChar*)"integral"
+///< integral XML label.
+#define XML_LINEAR              (const xmlChar*)"linear"
+///< linear XML label.
+#define XML_MESH                (const xmlChar*)"mesh"
+///< mesh XML label.
+#define XML_RANDOM              (const xmlChar*)"random"
+///< random XML label.
+#define XML_REGULAR             (const xmlChar*)"regular"
+///< regular XML label.
+#define XML_SHAPE               (const xmlChar*)"shape"
+///< shape XML label.
+#define XML_SINUSOIDAL          (const xmlChar*)"sinusoidal"
+///< sinusoidal XML label.
+#define XML_SQUARE              (const xmlChar*)"square"
+///< square XML label.
+#define XML_STEADY              (const xmlChar*)"steady"
+///< steady XML label.
+#define XML_TMAX                (const xmlChar*)"tmax"
+///< tmax XML label.
+#define XML_TRIANGULAR          (const xmlChar*)"triangular"
+///< triangular XML label.
+#define XML_TYPE                (const xmlChar*)"type"
+///< type XML label.
+#define XML_U0                  (const xmlChar*)"u0"
+///< u0 XML label.
+#define XML_VARIATION           (const xmlChar*)"variation"
+///< variation XML label.
+#define XML_W                   (const xmlChar*)"w"
+///< w XML label.
+#define XML_WAVE                (const xmlChar*)"wave"
+///< wave XML label.
+#define XML_X0                  (const xmlChar*)"x0"
+///< x0 XML label.
+#define XML_X1                  (const xmlChar*)"x1"
+///< x1 XML label.
+#define XML_XMAX                (const xmlChar*)"xmax"
+///< xmax XML label.
 
 #endif
